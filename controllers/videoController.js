@@ -1,64 +1,15 @@
-// // New Code
-
-// // controllers/videoController.js
-// const Video = require('../models/Video');
-
-// // Upload a video
-// const uploadVideo = async (req, res) => {
-//   try {
-//     const { title, description } = req.body;
-
-//     if (!req.file) {
-//       return res.status(400).json({ message: 'No video file provided' });
-//     }
-
-//     if (!req.user) {
-//       return res.status(401).json({ message: 'Unauthorized' });
-//     }
-
-//     const video = new Video({
-//       title,
-//       description,
-//       videoUrl: `/uploads/videos/${req.file.filename}`,
-//       uploadedBy: req.user._id,
-//     });
-
-//     await video.save();
-//     res.status(201).json({ message: 'Video uploaded successfully', video });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: 'Server error' });
-//   }
-// };
-
-// // Get all videos
-// const getAllVideos = async (req, res) => {
-//   try {
-//     const videos = await Video.find()
-//       .populate('uploadedBy', 'username profilePicture')
-//       .sort({ createdAt: -1 });
-
-//     res.status(200).json(videos);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: 'Server error' });
-//   }
-// };
-
-// module.exports = {
-//   uploadVideo,
-//   getAllVideos,
-// };
-
-
-
-
-
-
-
 const Video = require('../models/Video');
+const cloudinary = require('cloudinary').v2;
 
-// Upload a video
+// Configure Cloudinary with your credentials
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
+});
+
+
+// Upload a video to Cloudinary
 const uploadVideo = async (req, res) => {
   try {
     const { title, description } = req.body;
@@ -71,10 +22,16 @@ const uploadVideo = async (req, res) => {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
+    // Upload video to Cloudinary
+    const videoUploadResult = await cloudinary.uploader.upload(
+      req.file.path, // path to the local file
+      { resource_type: 'video' } // specify resource type as video
+    );
+
     const video = new Video({
       title,
       description,
-      videoUrl: `/uploads/videos/${req.file.filename}`,
+      videoUrl: videoUploadResult.secure_url, // Store the secure URL from Cloudinary
       uploadedBy: req.user._id,
     });
 
@@ -175,4 +132,3 @@ module.exports = {
   searchVideos,
   deleteVideo,
 };
-

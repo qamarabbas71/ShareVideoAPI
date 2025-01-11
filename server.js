@@ -6,6 +6,7 @@
 // const userRoutes = require('./routes/userRoutes');
 // const videoRoutes = require('./routes/videoRoutes');
 // const commentRoutes = require('./routes/commentRoutes');
+// const likeRoutes = require('./routes/likeRoutes');
 
 // dotenv.config();
 // const app = express();
@@ -21,7 +22,8 @@
 // // API Routes
 // app.use('/api/users', userRoutes);
 // app.use('/api/videos', videoRoutes);
-// app.use('/api/comments', commentRoutes); // Updated path
+// app.use('/api/comments', commentRoutes); 
+// app.use('/api/likes', likeRoutes)
 
 // // Home route
 // app.get('/', (req, res) => {
@@ -35,9 +37,6 @@
 
 
 
-
-
-// server.js
 const express = require('express');
 const connectDB = require('./config/db');
 const dotenv = require('dotenv');
@@ -57,13 +56,13 @@ connectDB();
 // Middleware
 app.use(express.json());
 app.use(cors());
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static('uploads')); // This may not be necessary anymore
 
 // API Routes
 app.use('/api/users', userRoutes);
 app.use('/api/videos', videoRoutes);
 app.use('/api/comments', commentRoutes); 
-app.use('/api/likes', likeRoutes)
+app.use('/api/likes', likeRoutes);
 
 // Home route
 app.get('/', (req, res) => {
